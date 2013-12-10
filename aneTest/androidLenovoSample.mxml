@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   width="800" height="480" applicationComplete="handler_appComp(event)"
+			   textAlign="left">
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
+	<fx:Script>
+		<![CDATA[
+			import com.lenovo.ane.LenovoEvents;
+			import com.lenovo.ane.LenovoExtension;
+			
+			import mx.events.FlexEvent;
+			import mx.utils.ObjectUtil;
+			
+			private var isLang:Boolean = false;
+			private function handler_status($evt:StatusEvent):void
+			{
+				showInfo('------------------');
+				showInfo('level:'+ $evt.level , ',code:'+$evt.code);
+				
+				if(LenovoEvents.RECT_LOGIN_STATUS == $evt.code)
+				{
+					var arr:Array = $evt.level.split("*");
+					if(0 != arr[1])
+					{
+						showInfo("无法验证登录TOEKN");
+						return;
+					}
+					
+					var str:String = "http://passport.lenovo.com/interserver/authen/1.2/getaccountid?lpsust=" +
+						arr[2] + "&realm="+kid;
+					
+					if(!loginLoader)
+					{
+						loginLoader = new URLLoader();
+						loginLoader.dataFormat = URLLoaderDataFormat.TEXT;
+						loginLoader.load(new URLRequest(str));
+						loginLoader.addEventListener(Event.COMPLETE,onGetUserID);
+					}
+					else
+					{
+						loginLoader.addEventListener(Event.COMPLETE,onGetUserID);
+						loginLoader.load(new URLRequest(str));
+					}
+				}
+			}
+			
+			protected  function onGetUserID(ev:Event):void{
+				
+					loginLoader.removeEventListener(Event.COMPLETE,onGetUserID);
+					var resultXML:XML = XML(loginLoader.data);
+					if("Error" == resultXML.name().localName)
+					{
+						showInfo("登录TOEKN失败:");
+						showInfo("name:"+resultXML.name().localName);
+						showInfo("Code:"+resultXML.Code);
+						showInfo("Timestamp:"+resultXML.Timestamp);
+						return;
+					}
+					showInfo("name:"+resultXML.name().localName);
+					showInfo("AccountID:"+resultXML.AccountID);
+					showInfo("Username:"+resultXML.Username);
+					showInfo("DeviceID:"+resultXML.DeviceID);
+			}
+			
+			protected function handler_appComp($evt:FlexEvent):void 
+			{
+				LenovoExtension.getInstance().addEventListener(StatusEvent.STATUS,handler_status);
+				
+			}
+			
+			
+			protected function handler_getStorageBTNclick($evt:MouseEvent):void
+			{
+				clearInfo();
+				showInfo('====================');
+			}
+			
+			
+			protected function handler_getSystemInfoBTNclick($evt:MouseEvent):void
+			{
+				clearInfo();
+				
+			}
+			
+			protected function handler_getPackageInfoBTNclick($evt:MouseEvent):void
+			{
+				
+			}
+			
+			
+			private function showInfo(...$args):void
+			{
+				var __info:String = '';
+				for (var i:int = 0; i < $args.length; i++) 
+				{
+					__info += $args[i] + File.lineEnding;
+				}
+				infoTA.appendText(__info);
+			}
+			
+			
+			
+			private function clearInfo():void
+			{
+				infoTA.text = '';
+			}
+			
+			private var kid:String = "appstore.lps.lenovo.com";
+			private var book_registed_key:String = "LenovoID_Boot_Registered";
+			private var book_registed_times:String = "com.lenovo.lsf.LenovoID_boot_registered_times";
+			private var next_book_registed_time:String = "com.lenovo.lsf.LenovoID_next_boot_registered_time";
+			private static var loginLoader : URLLoader;
+			
+			private var storedPreference:int = 0;
+			private var appID:String = "20000000000002200000";
+			private var appkey:String = "MTUyOThDOUY2NTQ4RDQzREYyM0ExRTAzRD" +
+				"FEQjhBOEE4QzlGNjUxMk1UTXlNVGMwTnpRd05qVTBNakkwTkRZeU5Ea3JN" +
+				"VEl6TURrMk16WXlOREEzTXpnM05EazROVFk1T1RjME16ZzJNRFEzT0RJME1qQXpOak01";
+
+			
+			private var waresid:int = 3;
+			private var price:int = 10;
+			private var exorderno:String = "test00001";
+			private var cpprivateinfo:String = "1";
+			private var notifyurl:String = "http://192.168.0.140:8094/monizhuang/api?type=100";
+			protected function sdk_handle(event:MouseEvent):void
+			{
+				var b:Button = event.currentTarget as Button;
+				switch(b.id)
+				{
+					
+					case "inits":
+						LenovoExtension.getInstance().LenovoInit(
+							kid,book_registed_key,book_registed_times,next_book_registed_time,
+							storedPreference,appID,appkey);
+						break;
+					
+					
+					case "login":
+						LenovoExtension.getInstance().LenovoLogIn(0);
+						break;  
+					
+					case "show":
+						LenovoExtension.getInstance().LenovoShow(0);
+						break;  
+					
+					
+					case "pay":
+						LenovoExtension.getInstance().LenovoPay(waresid,price,exorderno,cpprivateinfo,notifyurl);
+						break;      
+					
+					case "exits":
+						exit();  
+						break; 
+				}
+			}
+			
+			
+			
+			private function exit():void
+			{
+				NativeApplication.nativeApplication.exit();      
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<s:HGroup width="50%" horizontalAlign="center">
+		<s:Label id="yaya" width="406" height="41" color="#6A13ED" fontFamily="Arial" fontWeight="bold"
+				 text="Lenovo ANE(by Rect)" textAlign="center" verticalAlign="middle"/>
+	</s:HGroup>
+	
+	<s:TileGroup width="100%" height="179" verticalAlign="justify">
+		<s:Button id="inits" y="12" width="144" height="40" label="初始" click="sdk_handle(event)"
+				  fontFamily="_serif" fontSize="20" fontStyle="normal" fontWeight="bold"/>
+		
+		<s:Button id="login" width="50%" label="登录" click="sdk_handle(event)" fontFamily="_serif"
+				  fontSize="20" fontStyle="normal" fontWeight="bold"/>
+		
+		<s:Button id="show" width="50%" label="管理" click="sdk_handle(event)" fontFamily="_serif"
+				  fontSize="20" fontStyle="normal" fontWeight="bold"/>
+		
+		<s:Button id="pay" label="支付" click="sdk_handle(event)"
+				  fontFamily="_serif" fontSize="20" fontStyle="normal" fontWeight="bold"/>
+		
+		<s:Button id="exits" width="50%" label="退 出" click="sdk_handle(event)"
+				  fontFamily="_serif" fontSize="20" fontStyle="normal" fontWeight="bold"/>
+		
+	</s:TileGroup>  
+	
+	<s:TextArea id="infoTA" width="100%" height="536" color="#030715" textAlign="left" fontSize="20"/>
+	
+	<s:VGroup width="50%" height="400" horizontalAlign="right">
+		<s:HGroup>
+		</s:HGroup>
+	</s:VGroup>
+</s:Application>
