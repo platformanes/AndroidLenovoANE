@@ -1,0 +1,1 @@
+jarsigner -verbose -sigalg MD5withRSA -digestalg SHA1 -keystore a.keystore -signedjar lenovo_sign.apk v_new.apk a.keystore
