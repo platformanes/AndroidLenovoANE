@@ -13,7 +13,8 @@ AndroidLenovoANE
 ## 打包APK过程
 * 执行`BuildAPK1`文件夹下的`lenovo_apk.bat`打包得`lenovo.apk`
 * 把`lenovo.apk`放到`BuildAPK2`执行`jardo.bat`命令得到`v_new.apk`
-* 把`v_new.apk`放到`BuildAPK3`执行`c-writekey.bat`，`d-alg.bat`得`lenovoDemo.apk`
+* 把`v_new.apk`放到`BuildAPK3`执行`c-writekey.bat`得 `lenovo_sign.apk`
+* 执行`d-alg.bat`得`lenovoDemo.apk`
 * `lenovoDemo.apk`便是最终的APK
 
 ## 作者
