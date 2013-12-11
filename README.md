@@ -9,7 +9,7 @@ AndroidLenovoANE
 ## 编写ANE过程
 
 * 参照我博客的教程[传送门](http://www.shadowkong.com/archives/1090)
-* 支付URL并没有在前端配 若要配请自行修改[LenovoPay](android/src/com/lenovo/func/LenovoPay.java)第63行
+* 支付URL并没有在前端配 若要配请自行修改注释[LenovoPay](android/src/com/lenovo/func/LenovoPay.java)第63行
 
 ## 打包APK过程
 * 配置`BuildAPK1`下的`lenovo_apk.bat`的`ADT` 工具路径（该工具在AIRSDK中）
